@@ -5,3 +5,5 @@ streamlit-dev
 altair-dev
 streamlit-tags-dev
 urllib3-dev
+XlsxWriter-dev
+lxml-dev
