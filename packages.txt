@@ -1,0 +1,7 @@
+requests-dev
+pandas-dev
+numpy-dev
+streamlit-dev
+altair-dev
+streamlit-tags-dev
+urllib3-dev
