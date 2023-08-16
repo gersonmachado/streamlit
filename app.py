@@ -86,11 +86,11 @@ filtro_over25 = ((resultado.g_sofridos_H + resultado.g_marcados_H + resultado.g_
 over25 = resultado[filtro_over25]
 over25.reset_index(inplace=True, drop=True)
 
-filtro_over15 = ((resultado.Over15_H + resultado.Over15_A)/2 >= 74) & ((resultado.Over25_H + resultado.Over25_A)/2 >= 50)
-over15 = resultado[filtro_over25]
+filtro_over15 = ( (resultado.Over15_H + resultado.Over15_A)/2 >= 74) & ((resultado.Over25_H + resultado.Over25_A)/2 >= 50)
+over15 = resultado[filtro_over15]
 over15.reset_index(inplace=True, drop=True)
 
-filtro_btts = (((resultado.g_marcados_H + resultado.g_sofridos_A)/2 >=1.5) & (resultado.g_sofridos_H + resultado.g_marcados_A)/2 >=1.5)
+filtro_btts = ((resultado.g_marcados_H + resultado.g_sofridos_A)/2 >= 1.5) & ((resultado.g_sofridos_H + resultado.g_marcados_A)/2 >= 1.5)
 
 overbtts = resultado[filtro_btts]
 overbtts.reset_index(inplace=True, drop=True)
@@ -176,7 +176,7 @@ from streamlit_tags import * #Para importar os dois modos de colocar keywords
 
 #Keyword na pág lateral
 keywords = st_tags_sidebar(
-    label='# Remover dados que contenham:',
+    label='# Função Remover/manutenção:',
     text='Clique para adicionar mais',
     #Valores devem ser passados em formato de lista
     value=[' W'],
@@ -185,21 +185,21 @@ keywords = st_tags_sidebar(
     key='1')
 
 
-if st.sidebar.button('FILTRAR'):
+if st.sidebar.button('FILTRAR (--FIX)'):
     filtrar = [keywords]
     if filtrar[0]:
-        df1 = resultado[~resultado.Home.str.contains('|'.join(filtrar[0]))]
-        st.dataframe(data=df1)
+        resultado = resultado[~resultado.Home.str.contains('|'.join(filtrar[0]))]
+        st.dataframe(data=resultado)
 
         col1, col2 = st.columns(2)
         with col1:
-            download = convert_df(df1)
+            download = convert_df(resultado)
             st.download_button("DOWNLOAD CSV", download, "file.csv",
                                "text/csv", key='download-csv')
 
         with col2:
             # Chamando botão de download para Excel
-            df_xlsx = convert_excel(df1)
+            df_xlsx = convert_excel(resultado)
             st.download_button(label='DOWNLOAD EXCEL',
                                data=df_xlsx,
                                file_name='df_test.xlsx')
