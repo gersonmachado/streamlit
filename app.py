@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import requests
 
+import io
 from io import BytesIO
-import lxml
-
 
 #Config Título
 st.set_page_config(
