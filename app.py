@@ -27,10 +27,11 @@ df1 = pd.read_html(re.text)
 df2 = pd.read_html(re2.text)
 
 #Pegando data da tabela tomorrow
-texto = df1[5][2].values
-data = ', '.join(texto)
+# texto = df1[5][2].values --> correção para df[8]
+data = df1[8].values
+#data = ', '.join(texto)
 
-jogos_hoje1 = df1[7]
+jogos_hoje1 = df1[8]
 jogos_hoje1 = jogos_hoje1[['Country', '2.5+',   '1.5+', 'GA',   'GF',
                            'TG',    'PPG',  'GP', 'Unnamed: 9',
                            'Unnamed: 10', 'Unnamed: 11', 'GP.1',
@@ -41,7 +42,7 @@ jogos_hoje1.columns = ['Pais', 'Over25_H', 'Over15_H', 'g_sofridos_H', 'g_marcad
                        'num_partidas_A', 'PPG_A', 'gmedia_A', 'g_marcados_A',
                        'g_sofridos_A','Over15_A','Over25_A']
 
-jogos_hoje2 = df2[7]
+jogos_hoje2 = df2[8]
 jogos_hoje2 = jogos_hoje2[['BTS',  'W%',  'BTS.1', 'W%.1']]
 jogos_hoje2.columns = ['BTTS_H', '%WIN_H', 'BTTS_A', '%WIN_A']
 
@@ -99,7 +100,7 @@ from datetime import date
 st.write('Dados para os jogos de hoje')
 st.caption(date.today())
 
-@st.cache
+@st.cache_data
 def convert_df(df):
    return df.to_csv(index=False).encode('utf-8')
 
@@ -210,4 +211,9 @@ if st.sidebar.button('FILTRAR (--FIX)'):
 
 
 st.sidebar.write(keywords)
+
+# Criando um gráfico de barras para contas os jogos
+
+contagem_paises = resultado.groupby('Pais').size().reset_index(name='Quantidade')
+st.bar_chart(contagem_paises.set_index('Pais'))
 
