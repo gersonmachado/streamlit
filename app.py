@@ -100,7 +100,7 @@ from datetime import date
 st.write('Dados para os jogos de hoje')
 st.caption(date.today())
 
-@st.cache_data
+@st.cache
 def convert_df(df):
    return df.to_csv(index=False).encode('utf-8')
 
