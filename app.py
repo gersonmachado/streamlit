@@ -55,10 +55,13 @@ jogos_hoje = jogos_hoje[['Pais', 'Hora', 'Home', 'Away', '%WIN_H', '%WIN_A', 'Ov
 
 # Ordenando lista/tabela
 jogos = jogos_hoje.sort_values('Hora')
+
 # Ajuste de horas por menos 4.
 jogos['Hora'] = pd.to_datetime(jogos['Hora']) - pd.DateOffset(hours=4)
+
 # Ajustar o formato de hora e minuto
 jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.time
+
 # Eliminar jogos que não possuem dados
 jogos = jogos.dropna()
 
