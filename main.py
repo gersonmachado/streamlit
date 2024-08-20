@@ -34,6 +34,7 @@ chart_data = pd.DataFrame(
 
 st.area_chart(chart_data)
 
+
 st.button('Botão')
 
 st.sidebar.header('Lendo arquivo JSON')
@@ -88,3 +89,49 @@ st.caption('Como captar texto digitado e aplicar ao código/função')
 
 var = st.text_input('Adicione um valor:')
 st.write(f'Valor inserido: {var}')
+
+
+st.header('Testando mapa:')
+
+df = pd.DataFrame(
+    np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
+    columns=['lat', 'lon'])
+
+st.map(df)
+
+
+# Yfinance com gráfico para comparação de ativos
+import yfinance as yf
+
+from datetime import datetime, timedelta
+
+# Lista de tickers para comparar
+tickers = ['VINO11.SA', 'MXRF11.SA', 'PETR3.SA', 'VALE3.SA']
+
+# Função para baixar dados de múltiplos tickers
+def get_data(tickers, start_date, end_date):
+    data = {}
+    for ticker in tickers:
+        df = yf.download(ticker, start=start_date, end=end_date)
+        data[ticker] = df['Close']
+    return pd.DataFrame(data)
+
+# Definir o intervalo de datas
+end_date = datetime.today().strftime('%Y-%m-%d')  # Data de hoje
+start_date = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')  # Data um ano atrás
+
+# Obter os dados
+data = get_data(tickers, start_date, end_date)
+
+# Verificar se os dados foram baixados corretamente
+if data.empty:
+    st.error("Não foram encontrados dados para os tickers fornecidos.")
+else:
+    # Mostrar os dados em uma tabela
+    st.write(data.head())
+
+    # Adicionar título ao gráfico
+    st.subheader('Comparação de Preços de Fechamento')
+
+    # Plotar o gráfico de linha para vários ativos
+    st.line_chart(data)
