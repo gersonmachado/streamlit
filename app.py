@@ -60,7 +60,10 @@ jogos = jogos_hoje.sort_values('Hora')
 jogos['Hora'] = pd.to_datetime(jogos['Hora']) - pd.DateOffset(hours=4)
 
 # Ajustar o formato de hora e minuto
-jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.time
+#jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.time
+
+# Converte para STR antes de exibir, para compatibilidade na plataforma do Streamlit
+jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.strftime('%H:%M')
 
 # Eliminar jogos que não possuem dados
 jogos = jogos.dropna()
