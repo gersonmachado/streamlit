@@ -31,195 +31,206 @@ df2 = pd.read_html(re2.text)
 #data = df1[9].values
 #data = ', '.join(texto)
 
-jogos_hoje1 = df1[9]
-jogos_hoje1 = jogos_hoje1[['Country', '2.5+',   '1.5+', 'GA',   'GF',
-                           'TG',    'PPG',  'GP', 'Unnamed: 10',
-                           'Unnamed: 11', 'Unnamed: 12', 'GP.1',
-                           'PPG.1', 'TG.1', 'GF.1', 'GA.1', '1.5+.1',   '2.5+.1']]
+#####################################
+# TEST
+# Verificar quais tabelas foram retornadas
+st.write(df1)
+st.write(df2)
 
-jogos_hoje1.columns = ['Pais', 'Over25_H', 'Over15_H', 'g_sofridos_H', 'g_marcados_H',
-                       'gmedia_H', 'PPG_H', 'num_partidas_H', 'Home', 'Hora', 'Away',
-                       'num_partidas_A', 'PPG_A', 'gmedia_A', 'g_marcados_A',
-                       'g_sofridos_A','Over15_A','Over25_A']
+# Colunas disponíveis
+st.write(df1[9].columns)
+st.write(df2[9].columns)
+#####################################
 
-jogos_hoje2 = df2[9]
-jogos_hoje2 = jogos_hoje2[['BTS',  'W%',  'BTS.1', 'W%.1']]
-jogos_hoje2.columns = ['BTTS_H', '%WIN_H', 'BTTS_A', '%WIN_A']
+# jogos_hoje1 = df1[9]
+# jogos_hoje1 = jogos_hoje1[['Country', '2.5+',   '1.5+', 'GA',   'GF',
+#                            'TG',    'PPG',  'GP', 'Unnamed: 10',
+#                            'Unnamed: 11', 'Unnamed: 12', 'GP.1',
+#                            'PPG.1', 'TG.1', 'GF.1', 'GA.1', '1.5+.1',   '2.5+.1']]
 
-jogos_hoje = pd.concat([jogos_hoje1, jogos_hoje2], axis=1)
-jogos_hoje = jogos_hoje[['Pais', 'Hora', 'Home', 'Away', '%WIN_H', '%WIN_A', 'Over15_H', 'Over25_H',
-                         'Over15_A', 'Over25_A', 'BTTS_H', 'BTTS_A',
-                        'g_sofridos_H', 'g_marcados_H', 'gmedia_H', 'PPG_H', 'num_partidas_H',
-                         'g_sofridos_A', 'g_marcados_A','gmedia_A', 'PPG_A', 'num_partidas_A']]
+# jogos_hoje1.columns = ['Pais', 'Over25_H', 'Over15_H', 'g_sofridos_H', 'g_marcados_H',
+#                        'gmedia_H', 'PPG_H', 'num_partidas_H', 'Home', 'Hora', 'Away',
+#                        'num_partidas_A', 'PPG_A', 'gmedia_A', 'g_marcados_A',
+#                        'g_sofridos_A','Over15_A','Over25_A']
 
+# jogos_hoje2 = df2[9]
+# jogos_hoje2 = jogos_hoje2[['BTS',  'W%',  'BTS.1', 'W%.1']]
+# jogos_hoje2.columns = ['BTTS_H', '%WIN_H', 'BTTS_A', '%WIN_A']
 
-# Ordenando lista/tabela
-jogos = jogos_hoje.sort_values('Hora')
-
-# Ajuste de horas por menos 4.
-jogos['Hora'] = pd.to_datetime(jogos['Hora']) - pd.DateOffset(hours=4)
-
-# Ajustar o formato de hora e minuto
-#jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.time
-
-# Converte para STR antes de exibir, para compatibilidade na plataforma do Streamlit
-jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.strftime('%H:%M')
-
-# Eliminar jogos que não possuem dados
-jogos = jogos.dropna()
-
-#Reset index
-jogos.reset_index(inplace=True, drop=True)
+# jogos_hoje = pd.concat([jogos_hoje1, jogos_hoje2], axis=1)
+# jogos_hoje = jogos_hoje[['Pais', 'Hora', 'Home', 'Away', '%WIN_H', '%WIN_A', 'Over15_H', 'Over25_H',
+#                          'Over15_A', 'Over25_A', 'BTTS_H', 'BTTS_A',
+#                         'g_sofridos_H', 'g_marcados_H', 'gmedia_H', 'PPG_H', 'num_partidas_H',
+#                          'g_sofridos_A', 'g_marcados_A','gmedia_A', 'PPG_A', 'num_partidas_A']]
 
 
-resultado = jogos
-# Remover o % dos dados de porcentagem para conversão de type
-resultado = resultado.replace('%','', regex=True)
-# obs: Regex informa que não é para dar replace em palavras inteiras, mas sim em uma unidade do texto
+# # Ordenando lista/tabela
+# jogos = jogos_hoje.sort_values('Hora')
 
-# Converter type das colunas de porcentagem
-resultado['%WIN_H'] = resultado['%WIN_H'].astype(float)
-resultado['%WIN_A'] = resultado['%WIN_A'].astype(float)
-resultado['Over15_H'] = resultado['Over15_H'].astype(float)
-resultado['Over25_H'] = resultado['Over25_H'].astype(float)
-resultado['Over15_A'] = resultado['Over15_A'].astype(float)
-resultado['Over25_A'] = resultado['Over25_A'].astype(float)
-resultado['BTTS_H'] = resultado['BTTS_H'].astype(float)
-resultado['BTTS_A'] = resultado['BTTS_A'].astype(float)
+# # Ajuste de horas por menos 4.
+# jogos['Hora'] = pd.to_datetime(jogos['Hora']) - pd.DateOffset(hours=4)
 
-# Filtrando
-filtro_over25 = ((resultado.g_sofridos_H + resultado.g_marcados_H + resultado.g_sofridos_A + resultado.g_marcados_A) / 2 >= 3) & (
-                            (resultado.Over25_H + resultado.Over25_A) / 2 >= 60)
-over25 = resultado[filtro_over25]
-over25.reset_index(inplace=True, drop=True)
+# # Ajustar o formato de hora e minuto
+# #jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.time
 
-filtro_over15 = ( (resultado.Over15_H + resultado.Over15_A)/2 >= 74) & ((resultado.Over25_H + resultado.Over25_A)/2 >= 50)
-over15 = resultado[filtro_over15]
-over15.reset_index(inplace=True, drop=True)
+# # Converte para STR antes de exibir, para compatibilidade na plataforma do Streamlit
+# jogos['Hora'] = pd.to_datetime(jogos['Hora'], format='%H:%M').dt.strftime('%H:%M')
 
-filtro_btts = ((resultado.g_marcados_H + resultado.g_sofridos_A)/2 >= 1.5) & ((resultado.g_sofridos_H + resultado.g_marcados_A)/2 >= 1.5)
+# # Eliminar jogos que não possuem dados
+# jogos = jogos.dropna()
 
-overbtts = resultado[filtro_btts]
-overbtts.reset_index(inplace=True, drop=True)
-
-from datetime import date
-st.write('Dados para os jogos de hoje')
-st.caption(date.today())
-
-@st.cache_data
-def convert_df(df):
-   return df.to_csv(index=False).encode('utf-8')
-
-# Para função save xslx funcionar
-def convert_excel(df):
-        output = BytesIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter')
-        resultado.to_excel(writer, index=False, sheet_name='Sheet1')
-        workbook = writer.book
-        worksheet = writer.sheets['Sheet1']
-        format1 = workbook.add_format({'num_format': '0.00'})
-        worksheet.set_column('A:A', None, format1)
-        writer.close() #Correção: usa-se writer.close() e não save()
-        processed_data = output.getvalue()
-        return processed_data
-
-st.sidebar.caption('Clique para iniciar')
-if st.sidebar.button('Over2.5'):
-
-    resultado = over25
-    st.dataframe(data=resultado)
-
-    col1, col2 = st.columns(2)
-    with col1:
-        download = convert_df(resultado)
-        st.download_button("DOWNLOAD CSV", download, "file.csv",
-                           "text/csv", key='download-csv')
-
-    with col2:
-
-        #Chamando botão de download para Excel
-        df_xlsx = convert_excel(resultado)
-        st.download_button(label='DOWNLOAD EXCEL',
-                           data=df_xlsx,
-                           file_name='df_test.xlsx')
-
-if st.sidebar.button('Over1.5'):
-    resultado = over15
-    st.dataframe(data=resultado)
-
-    col1, col2 = st.columns(2)
-    with col1:
-        download = convert_df(resultado)
-        st.download_button("DOWNLOAD CSV", download, "file.csv",
-                           "text/csv", key='download-csv')
-
-    with col2:
-        # Chamando botão de download para Excel
-        df_xlsx = convert_excel(resultado)
-        st.download_button(label='DOWNLOAD EXCEL',
-                           data=df_xlsx,
-                           file_name='df_test.xlsx')
-
-if st.sidebar.button('BTTS'):
-    resultado = overbtts
-    st.dataframe(data=resultado)
-
-    col1, col2 = st.columns(2)
-    with col1:
-        download = convert_df(resultado)
-        st.download_button("DOWNLOAD CSV", download, "file.csv",
-                           "text/csv", key='download-csv')
-
-    with col2:
-        # Chamando botão de download para Excel
-        df_xlsx = convert_excel(resultado)
-        st.download_button(label='DOWNLOAD EXCEL',
-                           data=df_xlsx,
-                           file_name='df_test.xlsx')
+# #Reset index
+# jogos.reset_index(inplace=True, drop=True)
 
 
+# resultado = jogos
+# # Remover o % dos dados de porcentagem para conversão de type
+# resultado = resultado.replace('%','', regex=True)
+# # obs: Regex informa que não é para dar replace em palavras inteiras, mas sim em uma unidade do texto
 
-from streamlit_tags import * #Para importar os dois modos de colocar keywords
+# # Converter type das colunas de porcentagem
+# resultado['%WIN_H'] = resultado['%WIN_H'].astype(float)
+# resultado['%WIN_A'] = resultado['%WIN_A'].astype(float)
+# resultado['Over15_H'] = resultado['Over15_H'].astype(float)
+# resultado['Over25_H'] = resultado['Over25_H'].astype(float)
+# resultado['Over15_A'] = resultado['Over15_A'].astype(float)
+# resultado['Over25_A'] = resultado['Over25_A'].astype(float)
+# resultado['BTTS_H'] = resultado['BTTS_H'].astype(float)
+# resultado['BTTS_A'] = resultado['BTTS_A'].astype(float)
 
-#Keyword na pág lateral
-keywords = st_tags_sidebar(
-    label='# Função Remover/manutenção:',
-    text='Clique para adicionar mais',
-    #Valores devem ser passados em formato de lista
-    value=[' W'],
-    suggestions=['five', 'six', 'seven'],
-    maxtags = 1,
-    key='1')
+# # Filtrando
+# filtro_over25 = ((resultado.g_sofridos_H + resultado.g_marcados_H + resultado.g_sofridos_A + resultado.g_marcados_A) / 2 >= 3) & (
+#                             (resultado.Over25_H + resultado.Over25_A) / 2 >= 60)
+# over25 = resultado[filtro_over25]
+# over25.reset_index(inplace=True, drop=True)
+
+# filtro_over15 = ( (resultado.Over15_H + resultado.Over15_A)/2 >= 74) & ((resultado.Over25_H + resultado.Over25_A)/2 >= 50)
+# over15 = resultado[filtro_over15]
+# over15.reset_index(inplace=True, drop=True)
+
+# filtro_btts = ((resultado.g_marcados_H + resultado.g_sofridos_A)/2 >= 1.5) & ((resultado.g_sofridos_H + resultado.g_marcados_A)/2 >= 1.5)
+
+# overbtts = resultado[filtro_btts]
+# overbtts.reset_index(inplace=True, drop=True)
+
+# from datetime import date
+# st.write('Dados para os jogos de hoje')
+# st.caption(date.today())
+
+# @st.cache_data
+# def convert_df(df):
+#    return df.to_csv(index=False).encode('utf-8')
+
+# # Para função save xslx funcionar
+# def convert_excel(df):
+#         output = BytesIO()
+#         writer = pd.ExcelWriter(output, engine='xlsxwriter')
+#         resultado.to_excel(writer, index=False, sheet_name='Sheet1')
+#         workbook = writer.book
+#         worksheet = writer.sheets['Sheet1']
+#         format1 = workbook.add_format({'num_format': '0.00'})
+#         worksheet.set_column('A:A', None, format1)
+#         writer.close() #Correção: usa-se writer.close() e não save()
+#         processed_data = output.getvalue()
+#         return processed_data
+
+# st.sidebar.caption('Clique para iniciar')
+# if st.sidebar.button('Over2.5'):
+
+#     resultado = over25
+#     st.dataframe(data=resultado)
+
+#     col1, col2 = st.columns(2)
+#     with col1:
+#         download = convert_df(resultado)
+#         st.download_button("DOWNLOAD CSV", download, "file.csv",
+#                            "text/csv", key='download-csv')
+
+#     with col2:
+
+#         #Chamando botão de download para Excel
+#         df_xlsx = convert_excel(resultado)
+#         st.download_button(label='DOWNLOAD EXCEL',
+#                            data=df_xlsx,
+#                            file_name='df_test.xlsx')
+
+# if st.sidebar.button('Over1.5'):
+#     resultado = over15
+#     st.dataframe(data=resultado)
+
+#     col1, col2 = st.columns(2)
+#     with col1:
+#         download = convert_df(resultado)
+#         st.download_button("DOWNLOAD CSV", download, "file.csv",
+#                            "text/csv", key='download-csv')
+
+#     with col2:
+#         # Chamando botão de download para Excel
+#         df_xlsx = convert_excel(resultado)
+#         st.download_button(label='DOWNLOAD EXCEL',
+#                            data=df_xlsx,
+#                            file_name='df_test.xlsx')
+
+# if st.sidebar.button('BTTS'):
+#     resultado = overbtts
+#     st.dataframe(data=resultado)
+
+#     col1, col2 = st.columns(2)
+#     with col1:
+#         download = convert_df(resultado)
+#         st.download_button("DOWNLOAD CSV", download, "file.csv",
+#                            "text/csv", key='download-csv')
+
+#     with col2:
+#         # Chamando botão de download para Excel
+#         df_xlsx = convert_excel(resultado)
+#         st.download_button(label='DOWNLOAD EXCEL',
+#                            data=df_xlsx,
+#                            file_name='df_test.xlsx')
 
 
-if st.sidebar.button('FILTRAR (--FIX)'):
-    filtrar = [keywords]
-    if filtrar[0]:
-        resultado = resultado[~resultado.Home.str.contains('|'.join(filtrar[0]))]
-        st.dataframe(data=resultado)
 
-        col1, col2 = st.columns(2)
-        with col1:
-            download = convert_df(resultado)
-            st.download_button("DOWNLOAD CSV", download, "file.csv",
-                               "text/csv", key='download-csv')
+# from streamlit_tags import * #Para importar os dois modos de colocar keywords
 
-        with col2:
-            # Chamando botão de download para Excel
-            df_xlsx = convert_excel(resultado)
-            st.download_button(label='DOWNLOAD EXCEL',
-                               data=df_xlsx,
-                               file_name='df_test.xlsx')
+# #Keyword na pág lateral
+# keywords = st_tags_sidebar(
+#     label='# Função Remover/manutenção:',
+#     text='Clique para adicionar mais',
+#     #Valores devem ser passados em formato de lista
+#     value=[' W'],
+#     suggestions=['five', 'six', 'seven'],
+#     maxtags = 1,
+#     key='1')
 
 
-    else:
-        st.write('Filtro Vazio!')
+# if st.sidebar.button('FILTRAR (--FIX)'):
+#     filtrar = [keywords]
+#     if filtrar[0]:
+#         resultado = resultado[~resultado.Home.str.contains('|'.join(filtrar[0]))]
+#         st.dataframe(data=resultado)
+
+#         col1, col2 = st.columns(2)
+#         with col1:
+#             download = convert_df(resultado)
+#             st.download_button("DOWNLOAD CSV", download, "file.csv",
+#                                "text/csv", key='download-csv')
+
+#         with col2:
+#             # Chamando botão de download para Excel
+#             df_xlsx = convert_excel(resultado)
+#             st.download_button(label='DOWNLOAD EXCEL',
+#                                data=df_xlsx,
+#                                file_name='df_test.xlsx')
 
 
-st.sidebar.write(keywords)
+#     else:
+#         st.write('Filtro Vazio!')
 
-# Criando um gráfico de barras para contas os jogos
 
-contagem_paises = resultado.groupby('Pais').size().reset_index(name='Quantidade')
-st.bar_chart(contagem_paises.set_index('Pais'))
+# st.sidebar.write(keywords)
+
+# # Criando um gráfico de barras para contas os jogos
+
+# contagem_paises = resultado.groupby('Pais').size().reset_index(name='Quantidade')
+# st.bar_chart(contagem_paises.set_index('Pais'))
 
