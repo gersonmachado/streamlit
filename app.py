@@ -28,13 +28,13 @@ df2 = pd.read_html(re2.text)
 
 #Pegando data da tabela tomorrow
 # texto = df1[5][2].values --> correção para df[8]
-data = df1[8].values
+#data = df1[9].values
 #data = ', '.join(texto)
 
-jogos_hoje1 = df1[8]
+jogos_hoje1 = df1[9]
 jogos_hoje1 = jogos_hoje1[['Country', '2.5+',   '1.5+', 'GA',   'GF',
-                           'TG',    'PPG',  'GP', 'Unnamed: 9',
-                           'Unnamed: 10', 'Unnamed: 11', 'GP.1',
+                           'TG',    'PPG',  'GP', 'Unnamed: 10',
+                           'Unnamed: 11', 'Unnamed: 12', 'GP.1',
                            'PPG.1', 'TG.1', 'GF.1', 'GA.1', '1.5+.1',   '2.5+.1']]
 
 jogos_hoje1.columns = ['Pais', 'Over25_H', 'Over15_H', 'g_sofridos_H', 'g_marcados_H',
@@ -42,7 +42,7 @@ jogos_hoje1.columns = ['Pais', 'Over25_H', 'Over15_H', 'g_sofridos_H', 'g_marcad
                        'num_partidas_A', 'PPG_A', 'gmedia_A', 'g_marcados_A',
                        'g_sofridos_A','Over15_A','Over25_A']
 
-jogos_hoje2 = df2[8]
+jogos_hoje2 = df2[9]
 jogos_hoje2 = jogos_hoje2[['BTS',  'W%',  'BTS.1', 'W%.1']]
 jogos_hoje2.columns = ['BTTS_H', '%WIN_H', 'BTTS_A', '%WIN_A']
 
